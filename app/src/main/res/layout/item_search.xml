@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    card_view:contentPadding="16dp"
+    card_view:cardElevation="2dp"
+    card_view:cardCornerRadius="5dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardBackgroundColor="@color/cardview_light_background"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageViewMovieCoverSearch"
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    android:text="James Bond"
+                    android:id="@+id/textViewMovieTitleSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:textSize="16sp"
+                    android:textStyle="italic"
+                    android:id="@+id/textViewYearSearch"
+                    android:text="1994"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:textSize="16dp"
+                    android:textStyle="italic"
+                    android:text="Action"
+                    android:id="@+id/textViewTypeSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="movie is add on favorite list"
+                    android:id="@+id/textMovidAddListSearch"
+                    android:layout_width="wrap_content"
+                    android:visibility="invisible"
+                    android:layout_height="wrap_content" />
+
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/buttonAddFavorite"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/cardview_light_background"
+                android:src="@drawable/ic_star_border_black_24dp"
+                android:layout_gravity="center"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0"/>
+
+</android.support.v7.widget.CardView>

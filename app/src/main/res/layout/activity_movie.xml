@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.rafaelmeyer.mymovies.view.MovieActivity"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/imageViewMovieCover"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:text="James Bond"
+        android:id="@+id/textViewMovieTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:textSize="16sp"
+        android:textStyle="italic"
+        android:id="@+id/textViewYear"
+        android:text="1994"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:textSize="16dp"
+        android:textStyle="italic"
+        android:text="Action"
+        android:id="@+id/textViewType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:text="Excluir dos favoritos"
+        android:id="@+id/buttonRemoveMovie"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
