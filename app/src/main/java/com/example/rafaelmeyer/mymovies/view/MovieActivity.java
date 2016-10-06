@@ -1,15 +1,11 @@
 package com.example.rafaelmeyer.mymovies.view;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.rafaelmeyer.mymovies.R;
-import com.example.rafaelmeyer.mymovies.model.Movie;
 import com.example.rafaelmeyer.mymovies.model.MovieRealm;
 import com.squareup.picasso.Picasso;
 
@@ -23,7 +19,6 @@ public class MovieActivity extends AppCompatActivity {
     private TextView textViewMovieTitle;
     private TextView textViewYear;
     private TextView textViewType;
-    private Button buttonRemoveMovie;
 
     Realm myRealm;
     int position;
@@ -37,7 +32,6 @@ public class MovieActivity extends AppCompatActivity {
         textViewMovieTitle = (TextView) findViewById(R.id.textViewMovieTitle);
         textViewYear = (TextView) findViewById(R.id.textViewYear);
         textViewType = (TextView) findViewById(R.id.textViewType);
-        buttonRemoveMovie = (Button) findViewById(R.id.buttonRemoveMovie);
 
         position = getIntent().getExtras().getInt("position");
 
@@ -56,24 +50,6 @@ public class MovieActivity extends AppCompatActivity {
         textViewType.setText(type);
         textViewYear.setText(year);
 
-        buttonRemoveMovie.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        try {
-                            myRealm.beginTransaction();
-                            RealmQuery query = myRealm.where(MovieRealm.class);
-                            RealmResults results = query.findAll();
-                            results.get(position).removeFromRealm();
-                            myRealm.commitTransaction();
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                            finish();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-        );
 
     }
 }

@@ -60,6 +60,14 @@ public class Movie implements Parcelable {
         this.poster = poster;
     }
 
+    protected Movie(Parcel source) {
+        title = source.readString();
+        year = source.readString();
+        imdbID = source.readString();
+        type = source.readString();
+        poster = source.readString();
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -73,4 +81,16 @@ public class Movie implements Parcelable {
         dest.writeString(type);
         dest.writeString(poster);
     }
+
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }

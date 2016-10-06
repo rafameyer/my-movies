@@ -42,7 +42,8 @@ import retrofit.Retrofit;
 public class SearchActivity extends AppCompatActivity implements MyAdapterSearch.AddClickListener, MyAdapterSearch.ClickToViewMovieListener {
 
     private static final String TAG = "MainActivity";
-    private static final String BASE_URL = "http://omdbapi.com/";
+    public static final String BASE_URL = "http://omdbapi.com/";
+    public static final String MOVIESEARCH = "moviesearch";
 
     private List<Movie> movies;
     private RecyclerView myRecyclerView;
@@ -54,6 +55,7 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
     private EditText myEditSearch;
     private ProgressBar myProgressBar;
     private TextView textMovidAddListSearch;
+    private ProgressBar progressBarSearch;
 
     private SearchActivity self;
 
@@ -65,13 +67,15 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        myProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        myProgressBar = (ProgressBar) findViewById(R.id.progressBarSearch);
         textMovidAddListSearch = (TextView) findViewById(R.id.textMovidAddListSearch);
 
         myButtonSearch = (ImageButton) findViewById(R.id.imageButtonSearch);
         myEditSearch = (EditText) findViewById(R.id.editViewSearch);
 
         myRecyclerView = (RecyclerView) findViewById(R.id.recyclerViewSearch);
+
+        myProgressBar.setVisibility(View.INVISIBLE);
 
         myLayoutManager = new LinearLayoutManager(this);
         myRecyclerView.setLayoutManager(myLayoutManager);
@@ -83,6 +87,7 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
                         loadSearchButton();
                         InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         inputMethodManager.hideSoftInputFromWindow(myEditSearch.getWindowToken(), InputMethodManager.SHOW_IMPLICIT);
+                        myProgressBar.setVisibility(View.VISIBLE);
                         loadRetrofit();
                     }
                 }
@@ -115,23 +120,29 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
 
                 List<Movie> movieList = response.body().getSearch();
                 if (movieList == null || buttonSearchResult.length() == 1) {
+
                     Toast.makeText(getApplicationContext(), "not enough for search", Toast.LENGTH_SHORT).show();
+
                 } else {
                     for (int i=0; i < movieList.size(); i++) {
                         Log.d(TAG, movieList.get(i).getTitle());
+
+
+
                         if (movieList.get(i).getPoster().equals("N/A")){
                             String poster = "http://i.imgur.com/DvpvklR.png";
                             movieList.get(i).setPoster(poster);
                         }
+
                         movies.add(movieList.get(i));
                     }
                 }
-
 
                 myAdapter = new MyAdapterSearch(movies);
                 myAdapter.notifyDataSetChanged();
                 myRecyclerView.setAdapter(myAdapter);
                 myAdapter.setMyAddClickListener(self);
+                myAdapter.setMyClickToViewMovieListener(self);
             }
 
             @Override
@@ -159,19 +170,19 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
     }
 
     @Override
+    public void onClickToViewMovieListener(View view, int position) {
+
+        Log.d(TAG, "item movie was click to view");
+        Intent intent = new Intent(SearchActivity.this, MovieSearchActivity.class);
+        //Movie(String title, String year, String imdbID, String type, String poster)
+        Movie movieModel = movies.get(position);
+        intent.putExtra(MOVIESEARCH, movieModel);
+        startActivity(intent);
+
+    }
+
+    @Override
     public void onClickListener(View view, int position) {
-
-/*        String title = movies.get(position).getTitle();
-        String type = movies.get(position).getType();
-        String year = movies.get(position).getYear();
-        String poster = movies.get(position).getPoster();
-        String imdbID = movies.get(position).getImdbID();
-
-        Movie movie = new Movie(title, year, type, type, poster);
-
-        Intent intent = new Intent(SearchActivity.this, MovieActivity.class);
-        intent.putExtra("movie", movie);
-        startActivity(intent);*/
 
         Log.d(TAG, "item movie was click");
         Realm myRealm = Realm.getInstance(getApplicationContext());
@@ -192,14 +203,18 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
         movieRealm.setYear(year);
         movieRealm.setPoster(poster);
         movieRealm.setImdbID(imdbID);
-        //movieRealm.setSalve(true);
         myRealm.commitTransaction();
 
         movieRealms.add(movieRealm);
+
+        ImageButton imageButton = (ImageButton) view.findViewById(R.id.buttonAddFavorite);
+        imageButton.setImageResource(R.drawable.ic_star_black_24dp);
     }
 
     @Override
-    public void onClickToViewMovieListener(View view, int position) {
-
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 }

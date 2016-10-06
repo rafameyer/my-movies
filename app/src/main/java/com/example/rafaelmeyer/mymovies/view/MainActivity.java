@@ -1,6 +1,7 @@
 package com.example.rafaelmeyer.mymovies.view;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapterMain.ope
     private RecyclerView.LayoutManager myLayoutManager;
 
     private TextView textViewNoResult;
-
+    int location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapterMain.ope
                     public void onClick(View v) {
                         Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
                         startActivity(intent);
+                        finish();
                     }
                 }
         );
@@ -67,9 +70,10 @@ public class MainActivity extends AppCompatActivity implements MyAdapterMain.ope
         myLayoutManager = new LinearLayoutManager(this);
         myRecyclerView.setLayoutManager(myLayoutManager);
         myAdapter = new MyAdapterMain(movies);
-        myAdapter.notifyDataSetChanged();
         myRecyclerView.setAdapter(myAdapter);
         myAdapter.setMyOpenClickListener(this);
+        myAdapter.setMyClickToRemoveFromFavoriteListener(this);
+        myAdapter.notifyDataSetChanged();
 
     }
 
@@ -101,24 +105,11 @@ public class MainActivity extends AppCompatActivity implements MyAdapterMain.ope
         Intent intent = new Intent(MainActivity.this, MovieActivity.class);
         intent.putExtra("position", position);
         startActivity(intent);
-
-/*        String title  = results.get(position).getTitle();
-        String poster = results.get(position).getPoster();
-        String imdbID = results.get(position).getImdbID();
-        String type   = results.get(position).getType();
-        String year   = results.get(position).getYear();
-
-        Movie movie = new Movie(title, year, imdbID, type, poster);
-
-        Intent intent = new Intent();
-        intent.putExtra("item", movie);
-        startActivity(intent);*/
-
     }
 
     @Override
     public void onClickToRemoveFromFavoriteListener(View view, int position) {
-        movies.remove(position);
+        Log.d(TAG, "Click to Remove");
         myAdapter.notifyDataSetChanged();
 
         try {
@@ -133,5 +124,18 @@ public class MainActivity extends AppCompatActivity implements MyAdapterMain.ope
         } catch (Exception e) {
             e.printStackTrace();
         }
+        ImageButton imageButton = (ImageButton) view.findViewById(R.id.imageButtonClickRemoveFromFavorite);
+        imageButton.setImageResource(R.drawable.ic_star_border_black_24dp);
+
+        movies.remove(position);
+
+        Handler myHandler = new Handler();
+        myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                myAdapter.notifyDataSetChanged();
+            }
+        }, 500);
+
     }
 }

@@ -12,10 +12,13 @@ import android.widget.TextView;
 
 import com.example.rafaelmeyer.mymovies.R;
 import com.example.rafaelmeyer.mymovies.model.Movie;
+import com.example.rafaelmeyer.mymovies.model.MovieRealm;
 import com.example.rafaelmeyer.mymovies.view.SearchActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import io.realm.Realm;
 
 /**
  * Created by rafael.meyer on 10/3/16.
@@ -43,6 +46,12 @@ public class MyAdapterSearch extends RecyclerView.Adapter<MyAdapterSearch.ViewHo
         holder.textViewMovieTitleSearch.setText(movies.get(position).getTitle());
         holder.textViewYearSearch.setText(movies.get(position).getYear());
         holder.textViewTypeSearch.setText(movies.get(position).getType());
+        String imdbID = movies.get(position).getImdbID();
+        Realm myRealm = Realm.getInstance(holder.itemView.getContext());
+        MovieRealm movieRealmModel = myRealm.where(MovieRealm.class).equalTo("imdbID", imdbID).findFirst();
+        if (movieRealmModel != null) {
+            holder.buttonAddFavorite.setImageResource(R.drawable.ic_star_black_24dp);
+        }
     }
 
     @Override
