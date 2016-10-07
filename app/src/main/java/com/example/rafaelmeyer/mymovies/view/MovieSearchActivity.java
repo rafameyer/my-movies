@@ -10,7 +10,6 @@ import com.example.rafaelmeyer.mymovies.R;
 import com.example.rafaelmeyer.mymovies.api.MyOmdbApi;
 import com.example.rafaelmeyer.mymovies.model.Movie;
 import com.example.rafaelmeyer.mymovies.model.MovieDetails;
-import com.example.rafaelmeyer.mymovies.model.Search;
 import com.squareup.picasso.Picasso;
 
 import retrofit.Call;
@@ -39,7 +38,7 @@ public class MovieSearchActivity extends AppCompatActivity {
         textViewMovieTitle = (TextView) findViewById(R.id.textViewMovieTitleMovieSearch);
         textViewYear = (TextView) findViewById(R.id.textViewYearMovieSearch);
         textViewType = (TextView) findViewById(R.id.textViewTypeMovieSearch);
-        textViewPlotSearchView = (TextView) findViewById(R.id.textViewPlotSearchView);
+        textViewPlotSearchView = (TextView) findViewById(R.id.textViewPlotSearchViewSearch);
 
         Movie movie = getIntent().getParcelableExtra(SearchActivity.MOVIESEARCH);
         String imdbID = movie.getImdbID();
@@ -76,7 +75,6 @@ public class MovieSearchActivity extends AppCompatActivity {
                 textViewType.setText(type);
                 textViewYear.setText(year);
                 textViewPlotSearchView.setText(plot);
-
             }
 
             @Override

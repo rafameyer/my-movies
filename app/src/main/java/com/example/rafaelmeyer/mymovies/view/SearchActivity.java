@@ -31,8 +31,6 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
@@ -55,7 +53,6 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
     private EditText myEditSearch;
     private ProgressBar myProgressBar;
     private TextView textMovidAddListSearch;
-    private ProgressBar progressBarSearch;
 
     private SearchActivity self;
 
@@ -170,45 +167,58 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
     }
 
     @Override
-    public void onClickToViewMovieListener(View view, int position) {
+    public void onClickToViewMovieListener(View view, Movie model) {
 
         Log.d(TAG, "item movie was click to view");
         Intent intent = new Intent(SearchActivity.this, MovieSearchActivity.class);
         //Movie(String title, String year, String imdbID, String type, String poster)
-        Movie movieModel = movies.get(position);
-        intent.putExtra(MOVIESEARCH, movieModel);
+        intent.putExtra(MOVIESEARCH, model);
         startActivity(intent);
 
     }
 
     @Override
-    public void onClickListener(View view, int position) {
+    public void onClickListener(View view, Movie movie) {
 
         Log.d(TAG, "item movie was click");
         Realm myRealm = Realm.getInstance(getApplicationContext());
         RealmList<MovieRealm> movieRealms = new RealmList<>();
+        ImageButton imageButton = (ImageButton) view.findViewById(R.id.buttonAddFavorite);
 
-        String title = movies.get(position).getTitle();
-        String type = movies.get(position).getType();
-        String year = movies.get(position).getYear();
-        String poster = movies.get(position).getPoster();
-        String imdbID = movies.get(position).getImdbID();
+        String title  = movie.getTitle();
+        String type   = movie.getType();
+        String year   = movie.getYear();
+        String poster = movie.getPoster();
+        String imdbID = movie.getImdbID();
         if (poster.equals("N/A")){
             poster = "http://i.imgur.com/DvpvklR.png";
         }
-        myRealm.beginTransaction();
-        MovieRealm movieRealm = myRealm.createObject(MovieRealm.class);
-        movieRealm.setTitle(title);
-        movieRealm.setType(type);
-        movieRealm.setYear(year);
-        movieRealm.setPoster(poster);
-        movieRealm.setImdbID(imdbID);
-        myRealm.commitTransaction();
 
-        movieRealms.add(movieRealm);
+        MovieRealm movieRealmModel = myRealm.where(MovieRealm.class).equalTo("imdbID", imdbID).findFirst();
 
-        ImageButton imageButton = (ImageButton) view.findViewById(R.id.buttonAddFavorite);
-        imageButton.setImageResource(R.drawable.ic_star_black_24dp);
+        if (movieRealmModel == null) {
+
+            myRealm.beginTransaction();
+            MovieRealm movieRealm = myRealm.createObject(MovieRealm.class);
+            movieRealm.setTitle(title);
+            movieRealm.setType(type);
+            movieRealm.setYear(year);
+            movieRealm.setPoster(poster);
+            movieRealm.setImdbID(imdbID);
+            myRealm.commitTransaction();
+
+            movieRealms.add(movieRealm);
+
+            imageButton.setImageResource(R.drawable.ic_star_black_24dp);
+
+        } else {
+
+            imageButton.setImageResource(R.drawable.ic_star_border_black_24dp);
+            myRealm.beginTransaction();
+            movieRealmModel.removeFromRealm();
+            myRealm.commitTransaction();
+
+        }
     }
 
     @Override

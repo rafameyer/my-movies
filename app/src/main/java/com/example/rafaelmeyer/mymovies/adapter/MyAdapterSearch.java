@@ -1,7 +1,5 @@
 package com.example.rafaelmeyer.mymovies.adapter;
 
-import android.content.Context;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +11,6 @@ import android.widget.TextView;
 import com.example.rafaelmeyer.mymovies.R;
 import com.example.rafaelmeyer.mymovies.model.Movie;
 import com.example.rafaelmeyer.mymovies.model.MovieRealm;
-import com.example.rafaelmeyer.mymovies.view.SearchActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -51,6 +48,8 @@ public class MyAdapterSearch extends RecyclerView.Adapter<MyAdapterSearch.ViewHo
         MovieRealm movieRealmModel = myRealm.where(MovieRealm.class).equalTo("imdbID", imdbID).findFirst();
         if (movieRealmModel != null) {
             holder.buttonAddFavorite.setImageResource(R.drawable.ic_star_black_24dp);
+        } else {
+            holder.buttonAddFavorite.setImageResource(R.drawable.ic_star_border_black_24dp);
         }
     }
 
@@ -81,12 +80,14 @@ public class MyAdapterSearch extends RecyclerView.Adapter<MyAdapterSearch.ViewHo
         public void onClick(View v) {
             if (v == buttonAddFavorite) {
                 if (myAddClickListener != null) {
-                    myAddClickListener.onClickListener(v, getAdapterPosition());
+                    Movie movie = movies.get(getAdapterPosition());
+                    myAddClickListener.onClickListener(v, movie);
                 }
             }
             if (v == itemView) {
                 if (myClickToViewMovieListener != null) {
-                    myClickToViewMovieListener.onClickToViewMovieListener(v, getAdapterPosition());
+                    Movie movie = movies.get(getAdapterPosition());
+                    myClickToViewMovieListener.onClickToViewMovieListener(v, movie);
                 }
             }
         }
@@ -94,11 +95,11 @@ public class MyAdapterSearch extends RecyclerView.Adapter<MyAdapterSearch.ViewHo
     }
 
     public interface AddClickListener {
-        void onClickListener(View view, int position);
+        void onClickListener(View view, Movie movie);
     }
 
     public interface ClickToViewMovieListener {
-        void onClickToViewMovieListener(View view, int position);
+        void onClickToViewMovieListener(View view, Movie model);
     }
 
     public void setMyAddClickListener(AddClickListener myAddClickListener) {

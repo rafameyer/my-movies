@@ -1,7 +1,5 @@
 package com.example.rafaelmeyer.mymovies.adapter;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,9 +10,12 @@ import android.widget.TextView;
 
 import com.example.rafaelmeyer.mymovies.R;
 import com.example.rafaelmeyer.mymovies.model.Movie;
+import com.example.rafaelmeyer.mymovies.model.MovieRealm;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import io.realm.Realm;
 
 /**
  * Created by rafael.meyer on 10/3/16.
@@ -22,8 +23,10 @@ import java.util.List;
 public class MyAdapterMain extends RecyclerView.Adapter<MyAdapterMain.ViewHolder> {
 
     private List<Movie> movies;
-    public openClickListener mOpenClickListener;
+    public OpenClickListener myOpenClickListener;
     public ClickToRemoveFromFavoriteListener myClickToRemoveFromFavoriteListener;
+
+
     public MyAdapterMain(List<Movie> movies) {
         this.movies = movies;
     }
@@ -71,28 +74,34 @@ public class MyAdapterMain extends RecyclerView.Adapter<MyAdapterMain.ViewHolder
         public void onClick(View v) {
             if (v == imageButtonRemoveFromFavorite) {
                 if (myClickToRemoveFromFavoriteListener != null) {
-                    myClickToRemoveFromFavoriteListener.onClickToRemoveFromFavoriteListener(v, getAdapterPosition());
+                    String imdbID = movies.get(getAdapterPosition()).getImdbID();
+                    Realm myRealm = Realm.getInstance(itemView.getContext());
+                    MovieRealm movieRealmModel = myRealm.where(MovieRealm.class).equalTo("imdbID", imdbID).findFirst();
+                    myClickToRemoveFromFavoriteListener.onClickToRemoveFromFavoriteListener(v, movieRealmModel, getAdapterPosition());
                 }
             }
             if (v == itemView) {
-                if (mOpenClickListener != null) {
-                    mOpenClickListener.onClickListener(v, getAdapterPosition());
+                if (myOpenClickListener != null) {
+                    String imdbID = movies.get(getAdapterPosition()).getImdbID();
+                    Realm myRealm = Realm.getInstance(itemView.getContext());
+                    MovieRealm movieRealmModel = myRealm.where(MovieRealm.class).equalTo("imdbID", imdbID).findFirst();
+                    myOpenClickListener.onClickListener(v, movieRealmModel);
                 }
             }
         }
 
     }
 
-    public interface openClickListener {
-        void onClickListener(View view, int position);
+    public interface OpenClickListener {
+        void onClickListener(View view, MovieRealm model);
     }
 
     public interface ClickToRemoveFromFavoriteListener {
-        void onClickToRemoveFromFavoriteListener(View view, int position);
+        void onClickToRemoveFromFavoriteListener(View view, MovieRealm model, int position);
     }
 
-    public void setMyOpenClickListener(openClickListener mOpenClickListener) {
-        this.mOpenClickListener = mOpenClickListener;
+    public void setMyOpenClickListener(OpenClickListener myOpenClickListener) {
+        this.myOpenClickListener = myOpenClickListener;
     }
 
     public void setMyClickToRemoveFromFavoriteListener(ClickToRemoveFromFavoriteListener myClickToRemoveFromFavoriteListener) {
