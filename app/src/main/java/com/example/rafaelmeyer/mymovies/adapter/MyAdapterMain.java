@@ -77,7 +77,8 @@ public class MyAdapterMain extends RecyclerView.Adapter<MyAdapterMain.ViewHolder
                     String imdbID = movies.get(getAdapterPosition()).getImdbID();
                     Realm myRealm = Realm.getInstance(itemView.getContext());
                     MovieRealm movieRealmModel = myRealm.where(MovieRealm.class).equalTo("imdbID", imdbID).findFirst();
-                    myClickToRemoveFromFavoriteListener.onClickToRemoveFromFavoriteListener(v, movieRealmModel, getAdapterPosition());
+                    Movie movie = movies.get(getAdapterPosition());
+                    myClickToRemoveFromFavoriteListener.onClickToRemoveFromFavoriteListener(v, movieRealmModel, movie);
                 }
             }
             if (v == itemView) {
@@ -97,7 +98,7 @@ public class MyAdapterMain extends RecyclerView.Adapter<MyAdapterMain.ViewHolder
     }
 
     public interface ClickToRemoveFromFavoriteListener {
-        void onClickToRemoveFromFavoriteListener(View view, MovieRealm model, int position);
+        void onClickToRemoveFromFavoriteListener(View view, MovieRealm model, Movie movie);
     }
 
     public void setMyOpenClickListener(OpenClickListener myOpenClickListener) {

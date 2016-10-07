@@ -55,6 +55,9 @@ public class MainActivity extends AppCompatActivity implements MyAdapterMain.Ope
                 }
         );
 
+        myRealm = Realm.getInstance(this);
+        results = myRealm.where(MovieRealm.class).findAll();
+
         loadRealmObjectToMemory();
 
         myLayoutManager = new LinearLayoutManager(this);
@@ -68,9 +71,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapterMain.Ope
     }
 
     private void loadRealmObjectToMemory() {
-        myRealm = Realm.getInstance(this);
-        results = myRealm.where(MovieRealm.class).findAll();
-
         if (results.size() == 0) {
             textViewNoResult.setVisibility(View.VISIBLE);
         }
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapterMain.Ope
     }
 
     @Override
-    public void onClickToRemoveFromFavoriteListener(View view, MovieRealm model, int position) {
+    public void onClickToRemoveFromFavoriteListener(View view, MovieRealm model, Movie movie) {
         Log.d(TAG, "Click to Remove");
         try {
             myRealm.beginTransaction();
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapterMain.Ope
         } catch (Exception e) {
             e.printStackTrace();
         }
-        movies.remove(position);
+        movies.remove(movie);
         myAdapter.notifyDataSetChanged();
     }
 }
