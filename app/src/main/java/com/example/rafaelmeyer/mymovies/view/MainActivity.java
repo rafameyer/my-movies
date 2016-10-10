@@ -35,13 +35,29 @@ public class MainActivity extends AppCompatActivity implements MyAdapterMain.Ope
     private TextView textViewNoResult;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        loadRealmObjectToMemory();
+        initializeRecyclerView();
+    }
+
+    private void initializeRecyclerView() {
+        myLayoutManager = new LinearLayoutManager(this);
+        myRecyclerView.setLayoutManager(myLayoutManager);
+        myAdapter = new MyAdapterMain(movies);
+        myRecyclerView.setAdapter(myAdapter);
+        myAdapter.setMyOpenClickListener(this);
+        myAdapter.setMyClickToRemoveFromFavoriteListener(this);
+        myAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         textViewNoResult = (TextView) findViewById(R.id.textViewNoResult);
 
-        myRecyclerView = (RecyclerView) findViewById(R.id.recyclerViewMain);
         myFloatingActionButton = (FloatingActionButton) findViewById(R.id.floatActionButton);
 
         myFloatingActionButton.setOnClickListener(
@@ -50,43 +66,34 @@ public class MainActivity extends AppCompatActivity implements MyAdapterMain.Ope
                     public void onClick(View v) {
                         Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
                         startActivity(intent);
-                        finish();
                     }
                 }
         );
 
         myRealm = Realm.getInstance(this);
         results = myRealm.where(MovieRealm.class).findAll();
-
-        loadRealmObjectToMemory();
-
-        myLayoutManager = new LinearLayoutManager(this);
-        myRecyclerView.setLayoutManager(myLayoutManager);
-        myAdapter = new MyAdapterMain(movies);
-        myRecyclerView.setAdapter(myAdapter);
-        myAdapter.setMyOpenClickListener(this);
-        myAdapter.setMyClickToRemoveFromFavoriteListener(this);
-        myAdapter.notifyDataSetChanged();
-
     }
 
     private void loadRealmObjectToMemory() {
-        if (results.size() == 0) {
-            textViewNoResult.setVisibility(View.VISIBLE);
-        }
+        movies.clear();
+        myRecyclerView = (RecyclerView) findViewById(R.id.recyclerViewMain);
 
         for (int i=0; i < results.size(); i++) {
-            String title = results.get(i).getTitle();
-            String year = results.get(i).getYear();
-            String type = results.get(i).getType();
+            String title  = results.get(i).getTitle();
+            String year   = results.get(i).getYear();
+            String type   = results.get(i).getType();
             String poster = results.get(i).getPoster();
             String imdbID = results.get(i).getImdbID();
-            if (poster.equals("N/A")){
-                poster = "http://i.imgur.com/DvpvklR.png";
-            }
             Movie movieModel = new Movie(title, year, imdbID, type, poster);
             movies.add(movieModel);
         }
+
+        if (movies.size() != 0) {
+            textViewNoResult.setVisibility(View.INVISIBLE);
+        } else {
+            textViewNoResult.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override
@@ -95,12 +102,11 @@ public class MainActivity extends AppCompatActivity implements MyAdapterMain.Ope
 
         Intent intent = new Intent(MainActivity.this, MovieActivity.class);
 
-        String title = model.getTitle();
-        String year = model.getYear();
-        String type = model.getType();
+        String title  = model.getTitle();
+        String year   = model.getYear();
+        String type   = model.getType();
         String poster = model.getPoster();
         String imdbID = model.getImdbID();
-
         Movie movieModel = new Movie(title, year, imdbID, type, poster);
 
         intent.putExtra("object", movieModel);
@@ -114,9 +120,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapterMain.Ope
             myRealm.beginTransaction();
             model.removeFromRealm();
             myRealm.commitTransaction();
-            if (results.size() == 0) {
-                textViewNoResult.setVisibility(View.VISIBLE);
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }

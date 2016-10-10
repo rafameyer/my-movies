@@ -160,7 +160,6 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                startActivity(new Intent(this, MainActivity.class));
                 finish();
         }
         return super.onOptionsItemSelected(item);
@@ -224,7 +223,6 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 }
