@@ -2,6 +2,9 @@ package com.example.rafaelmeyer.mymovies.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.PersistableBundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -42,6 +45,7 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
     private static final String TAG = "MainActivity";
     public static final String BASE_URL = "http://omdbapi.com/";
     public static final String MOVIESEARCH = "moviesearch";
+    private static final String KEY = "Key";
 
     private List<Movie> movies;
     private RecyclerView myRecyclerView;
@@ -55,6 +59,19 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
     private TextView textMovidAddListSearch;
 
     private SearchActivity self;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (myEditSearch.isClickable()) {
+            actionButtonSearch();
+        }
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onRestoreInstanceState(savedInstanceState, persistentState);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,15 +98,19 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        loadSearchButton();
-                        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputMethodManager.hideSoftInputFromWindow(myEditSearch.getWindowToken(), InputMethodManager.SHOW_IMPLICIT);
-                        myProgressBar.setVisibility(View.VISIBLE);
-                        loadRetrofit();
+                        actionButtonSearch();
                     }
                 }
         );
 
+    }
+
+    private void actionButtonSearch() {
+        loadSearchButton();
+        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(myEditSearch.getWindowToken(), InputMethodManager.SHOW_IMPLICIT);
+        myProgressBar.setVisibility(View.VISIBLE);
+        loadRetrofit();
     }
 
     private void loadSearchButton() {
@@ -117,14 +138,10 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
 
                 List<Movie> movieList = response.body().getSearch();
                 if (movieList == null || buttonSearchResult.length() == 1) {
-
-                    Toast.makeText(getApplicationContext(), "not enough for search", Toast.LENGTH_SHORT).show();
-
+                    return;
                 } else {
                     for (int i=0; i < movieList.size(); i++) {
                         Log.d(TAG, movieList.get(i).getTitle());
-
-
 
                         if (movieList.get(i).getPoster().equals("N/A")){
                             String poster = "http://i.imgur.com/DvpvklR.png";
@@ -170,9 +187,15 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
 
         Log.d(TAG, "item movie was click to view");
         Intent intent = new Intent(SearchActivity.this, MovieSearchActivity.class);
-        //Movie(String title, String year, String imdbID, String type, String poster)
+
+        String transition = getString(R.string.transition_string);
+        View viewStart = view.findViewById(R.id.imageViewMovieCoverSearch);
+
+        ActivityOptionsCompat optionsCompat =
+                ActivityOptionsCompat.makeSceneTransitionAnimation(this, viewStart, transition);
+
         intent.putExtra(MOVIESEARCH, model);
-        startActivity(intent);
+        ActivityCompat.startActivity(this, intent, optionsCompat.toBundle());
 
     }
 
@@ -224,5 +247,11 @@ public class SearchActivity extends AppCompatActivity implements MyAdapterSearch
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putString(KEY, buttonSearchResult);
     }
 }

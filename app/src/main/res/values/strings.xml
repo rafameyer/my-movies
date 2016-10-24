@@ -3,4 +3,5 @@
     <string name="search_hint">searchable</string>
     <string name="search_title">search</string>
     <string name="action_refresh">refresh list</string>
+    <string name="transition_string">hello</string>
 </resources>
